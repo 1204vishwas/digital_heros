@@ -46,8 +46,12 @@ router.post('/register', (req, res) => {
       renewalDate.setMonth(now.getMonth() + 1);
     }
 
-    // Default charity if none specified
-    let targetCharityId = charityId;
+    // Default charity if none specified or invalid
+    let targetCharityId = null;
+    if (charityId) {
+      const check = db.prepare('SELECT id FROM charities WHERE id = ?').get(charityId);
+      if (check) targetCharityId = check.id;
+    }
     if (!targetCharityId) {
       const firstCharity = db.prepare('SELECT id FROM charities LIMIT 1').get();
       targetCharityId = firstCharity ? firstCharity.id : null;
@@ -160,7 +164,11 @@ router.post('/social-login', (req, res) => {
         renewalDate.setMonth(now.getMonth() + 1);
       }
 
-      let targetCharityId = charityId;
+      let targetCharityId = null;
+      if (charityId) {
+        const check = db.prepare('SELECT id FROM charities WHERE id = ?').get(charityId);
+        if (check) targetCharityId = check.id;
+      }
       if (!targetCharityId) {
         const firstCharity = db.prepare('SELECT id FROM charities LIMIT 1').get();
         targetCharityId = firstCharity ? firstCharity.id : null;

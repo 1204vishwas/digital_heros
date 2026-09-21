@@ -110,7 +110,7 @@ export const LoginPage = () => {
             <span className="text-[10px] text-brand-mint font-semibold">PRD § 15 Ready</span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={() => fillQuickCredentials('golfer@digitalheroes.com', 'golfer123')}
@@ -140,7 +140,7 @@ export const LoginPage = () => {
         </div>
 
         {/* Login Form Card */}
-        <div className="p-8 rounded-3xl bg-dark-900/80 backdrop-blur-xl border border-white/10 shadow-2xl space-y-5">
+        <div className="p-5 sm:p-8 rounded-3xl bg-dark-900/80 backdrop-blur-xl border border-white/10 shadow-2xl space-y-5">
           {error && (
             <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium">
               {error}
@@ -149,7 +149,7 @@ export const LoginPage = () => {
 
           {/* Social Sign In Buttons (Google & Facebook) */}
           <div className="space-y-2">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setSocialModal({ isOpen: true, provider: 'google' })}
