@@ -58,9 +58,15 @@ node test-logic.js
 
 | Route Prefix | Scope | Description |
 |---|---|---|
-| `/api/auth` | Public & Protected | Registration, Login, Current Profile, Subscription Plan management |
-| `/api/scores` | Subscriber | 5-Score rolling buffer CRUD (1-45 Stableford, 1 score per date) |
-| `/api/draws` | Public & Admin | Latest draw, History, Live pool calculation, Simulation, Publishing |
+| `/api/auth` | Public & Protected | Registration, Standard Login, **Social Auth (`POST /api/auth/social-login`)** with own email & charity split, Profile (`/me`), Subscription Plan management |
+| `/api/scores` | Subscriber | 5-Score rolling buffer CRUD (1-45 Stableford, 1 score per date constraint) |
+| `/api/draws` | Public & Admin | Latest draw, History, Live pool calculation in INR (`₹`), Simulation, Publishing |
 | `/api/charities` | Public & Admin | Directory, Categories, Profile & Golf Events, Direct Donations, CRUD |
-| `/api/winners` | Subscriber & Admin | Winner scorecard proof upload, Admin verification review, Payouts |
-| `/api/admin` | Admin only | User management, direct score edits, analytics & score distribution |
+| `/api/winners` | Subscriber & Admin | Winner scorecard proof upload, Admin verification review, Payouts in INR |
+| `/api/admin` | Admin only | User management, Activity status monitoring, direct score edits, analytics & score distribution |
+
+---
+
+## 🇮🇳 Currency & Completion Engine Standards
+- **Monetary Unit**: Indian Rupee (`INR ₹`). Standard plans: `₹499/mo`, `₹4,990/yr`. Base jackpot rollover: `₹14,25,000`.
+- **Activity Status Engine**: Dynamic status (`COMPLETED` vs `IN PROGRESS`) evaluated when a subscriber maintains an active subscription, configures a charity (min 10%), and logs exactly 5 rolling scores.

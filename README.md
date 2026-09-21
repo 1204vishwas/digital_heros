@@ -98,17 +98,28 @@ A real-time, dynamic **Activity Completion Engine** tracks subscriber participat
 
 ---
 
-## 🌐 1-Click Social Sign-In (Google & Facebook)
+## 🌐 Own Email ID Social Authentication (Google & Facebook) & 100% Responsive UI
 
-Both the **[`/signup`](http://localhost:5173/signup)** and **[`/login`](http://localhost:5173/login)** pages feature 1-click Social Authentication with Google and Facebook:
-- **Sign Up with Google / Facebook**:
-  - Automatically captures user profile (e.g. Callum Vance, Arjun Patel, or custom profile).
-  - Pairs directly with the golfer's chosen subscription plan (`₹499/mo` or `₹4,990/yr`) and charity allocation.
-  - Immediately creates the active subscription account and issues an authenticated session token.
-- **Sign In with Google / Facebook**:
-  - One-click account picker with preset identities or custom Google/Facebook credentials.
-  - Bypasses password entry and directly launches the authenticated portal.
-- **Backend API**: Powered by `POST /api/auth/social-login`, creating or retrieving subscriber accounts safely and seamlessly.
+Both the **[`/signup`](http://localhost:5173/signup)** and **[`/login`](http://localhost:5173/login)** pages feature dedicated, production-ready Social Authentication with Google and Facebook:
+
+### 1. Authenticate with Your OWN Email ID
+- **Custom Google & Facebook Email Authentication**:
+  - Clicking **"Sign up with Google"** or **"Sign up with Facebook"** opens an interactive authentication dialog where users directly enter their **own email ID** (e.g. `yourname@gmail.com` or `yourname@facebook.com`).
+  - Full client-side email format validation ensures an `@` and valid domain name before proceeding.
+  - **Custom or Auto-Derived Display Name**: Users can type their full name, or leave it blank to let the system parse and capitalize a clean display name from their email prefix.
+- **Automatic Subscription & Charity Pairing**:
+  - When signing up with a custom social email, the system automatically captures the selected subscription plan (**₹499/mo** or **₹4,990/yr**) and voluntary charity percentage (**10% to 50%**), stores the record securely in the database, and issues an authenticated JWT token.
+  - Returning users logging in with their Google or Facebook email are instantly recognized and signed into their existing dashboard.
+- **1-Tap Evaluator Autofill Pills**:
+  - Quick-fill preset buttons (`Callum Vance`, `Arjun Patel`, `Priya Sharma`) allow one-click evaluation without typing.
+- **Backend API**: Powered by `POST /api/auth/social-login` with safe foreign key resolution and fallback handling.
+
+### 2. 100% Fully Responsive Layout Across All Devices
+- **Mobile Smartphone Optimized (320px–480px)**:
+  - Plan selection cards (`₹499/mo` vs `₹4,990/yr`), evaluator quick-login credentials, and social auth buttons use dynamic `grid-cols-1 sm:grid-cols-2` layouts that stack neatly on phones, preventing horizontal overflow or truncated text.
+  - Card padding adapts smoothly (`p-5 sm:p-8 md:p-10`) to provide comfortable touch margins on compact phone screens.
+- **Responsive Dialog Viewports**:
+  - Social authentication modal utilizes `max-h-[92vh]`, safe scrollbars, and touch-target heights (`py-2.5 sm:py-3`), guaranteeing flawless usability on mobile phones, tablets, laptops, and ultra-wide desktop monitors.
 
 ---
 
@@ -250,6 +261,7 @@ intern/
         ├── components/
         │   ├── Navbar.jsx     # Navigation with live jackpot pill & Activity chip
         │   ├── Footer.jsx     # Modern editorial footer
+        │   ├── SocialAuthModal.jsx # Responsive Google/Facebook own email auth dialog
         │   └── ProtectedRoute.jsx
         └── pages/
             ├── HomePage.jsx   # Landing page ("Feel, not fairway")
