@@ -12,6 +12,7 @@ import {
   Cpu
 } from 'lucide-react';
 import { api } from '../api/client';
+import { formatINR } from '../utils/currency';
 
 export const DrawMechanicsPage = () => {
   const [history, setHistory] = useState([]);
@@ -226,8 +227,8 @@ export const DrawMechanicsPage = () => {
                       </div>
                     </td>
                     <td className="py-3.5 px-4">{d.active_subscribers_count}</td>
-                    <td className="py-3.5 px-4 font-bold text-white">${Number(d.total_pool).toLocaleString()}</td>
-                    <td className="py-3.5 px-4 font-medium text-brand-mint">${Number(d.jackpot_rollover_out).toLocaleString()}</td>
+                    <td className="py-3.5 px-4 font-bold text-white">{formatINR(d.total_pool)}</td>
+                    <td className="py-3.5 px-4 font-medium text-brand-mint">{formatINR(d.jackpot_rollover_out)}</td>
                   </tr>
                 ))
               )}

@@ -25,6 +25,7 @@ import {
 import confetti from 'canvas-confetti';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { formatINR } from '../utils/currency';
 
 export const AdminDashboardPage = () => {
   const { user } = useAuth();
@@ -55,7 +56,7 @@ export const AdminDashboardPage = () => {
     description: '',
     logoUrl: '',
     coverImage: '',
-    targetAmount: 50000,
+    targetAmount: 500000,
     isFeatured: false
   });
   const [newEventCharityId, setNewEventCharityId] = useState(null);
@@ -364,59 +365,79 @@ export const AdminDashboardPage = () => {
                   <th className="py-3 px-4">Subscription</th>
                   <th className="py-3 px-4">Charity Split</th>
                   <th className="py-3 px-4">Active 5 Scores</th>
+                  <th className="py-3 px-4">Activity Status</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 text-slate-300 text-xs">
-                {usersList.map((u) => (
-                  <tr key={u.id} className="hover:bg-white/[0.01]">
-                    <td className="py-3.5 px-4">
-                      <div className="font-bold text-white">{u.name}</div>
-                      <div className="text-[11px] text-slate-500 font-mono">{u.email}</div>
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${
-                        u.role === 'admin' ? 'bg-brand-coral/20 text-brand-coral' : 'bg-white/10 text-slate-300'
-                      }`}>
-                        {u.role}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center space-x-1.5">
-                        <span className={`w-2 h-2 rounded-full ${u.subscription_status === 'active' ? 'bg-brand-mint' : 'bg-red-400'}`}></span>
-                        <span className="capitalize font-semibold text-white">{u.subscription_status}</span>
-                      </div>
-                      <div className="text-[10px] text-slate-500 capitalize">{u.subscription_plan} plan</div>
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <div className="font-semibold text-white">{u.charity_percentage || 10}%</div>
-                      <div className="text-[10px] text-slate-500 truncate max-w-[120px]">{u.charity_name || 'Not set'}</div>
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <div className="flex space-x-1">
-                        {(u.scores || []).map((s, idx) => (
-                          <span key={idx} className="w-6 h-6 rounded bg-dark-950 border border-white/10 text-brand-coral font-bold font-mono text-[11px] flex items-center justify-center">
-                            {s.score}
+                {usersList.map((u) => {
+                  const isSubActive = u.subscription_status === 'active';
+                  const isCharityConfigured = !!u.charity_id || !!u.charity_name;
+                  const hasFiveScores = (u.scores || []).length === 5;
+                  const isComplete = isSubActive && isCharityConfigured && hasFiveScores;
+                  const completedCount = (isSubActive ? 1 : 0) + (isCharityConfigured ? 1 : 0) + (hasFiveScores ? 1 : 0);
+
+                  return (
+                    <tr key={u.id} className="hover:bg-white/[0.01]">
+                      <td className="py-3.5 px-4">
+                        <div className="font-bold text-white">{u.name}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">{u.email}</div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${
+                          u.role === 'admin' ? 'bg-brand-coral/20 text-brand-coral' : 'bg-white/10 text-slate-300'
+                        }`}>
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center space-x-1.5">
+                          <span className={`w-2 h-2 rounded-full ${u.subscription_status === 'active' ? 'bg-brand-mint' : 'bg-red-400'}`}></span>
+                          <span className="capitalize font-semibold text-white">{u.subscription_status}</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 capitalize">{u.subscription_plan} plan</div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="font-semibold text-white">{u.charity_percentage || 10}%</div>
+                        <div className="text-[10px] text-slate-500 truncate max-w-[120px]">{u.charity_name || 'Not set'}</div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="flex space-x-1">
+                          {(u.scores || []).map((s, idx) => (
+                            <span key={idx} className="w-6 h-6 rounded bg-dark-950 border border-white/10 text-brand-coral font-bold font-mono text-[11px] flex items-center justify-center">
+                              {s.score}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        {isComplete ? (
+                          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-brand-mint/15 border border-brand-mint/30 text-brand-mint text-[11px] font-bold">
+                            <span>Completed ✓</span>
                           </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-right space-x-2">
-                      <button
-                        onClick={() => setEditingUser(u)}
-                        className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition font-medium text-[11px]"
-                      >
-                        Edit Profile
-                      </button>
-                      <button
-                        onClick={() => handleOpenScoreEditor(u)}
-                        className="px-2.5 py-1.5 rounded-lg bg-brand-coral/10 hover:bg-brand-coral/20 text-brand-coral transition font-bold text-[11px]"
-                      >
-                        Edit Scores
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        ) : (
+                          <span className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-slate-800/80 border border-white/10 text-slate-400 text-[11px] font-medium">
+                            <span>Incomplete ({completedCount}/3)</span>
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-right space-x-2">
+                        <button
+                          onClick={() => setEditingUser(u)}
+                          className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition font-medium text-[11px]"
+                        >
+                          Edit Profile
+                        </button>
+                        <button
+                          onClick={() => handleOpenScoreEditor(u)}
+                          className="px-2.5 py-1.5 rounded-lg bg-brand-coral/10 hover:bg-brand-coral/20 text-brand-coral transition font-bold text-[11px]"
+                        >
+                          Edit Scores
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -546,7 +567,7 @@ export const AdminDashboardPage = () => {
                 <div className="p-4 rounded-xl bg-dark-950 border border-white/5">
                   <div className="text-slate-400">Total Prize Pool</div>
                   <div className="text-xl font-bold font-display text-white mt-1">
-                    ${Number(simulationData.pool.totalPool).toLocaleString()}
+                    {formatINR(simulationData.pool.totalPool)}
                   </div>
                 </div>
 
@@ -560,7 +581,7 @@ export const AdminDashboardPage = () => {
                 <div className="p-4 rounded-xl bg-dark-950 border border-white/5">
                   <div className="text-slate-400">Unclaimed 5-Match Rollover</div>
                   <div className="text-xl font-bold font-display text-brand-coral mt-1">
-                    ${Number(simulationData.nextRollover).toLocaleString()}
+                    {formatINR(simulationData.nextRollover)}
                   </div>
                 </div>
               </div>
@@ -604,7 +625,7 @@ export const AdminDashboardPage = () => {
                             </td>
                             <td className="p-3 font-mono text-brand-mint">[{w.matchedNumbers.join(', ')}]</td>
                             <td className="p-3 text-right font-display font-bold text-white">
-                              ${Number(w.prizeAmount).toLocaleString()}
+                              {formatINR(w.prizeAmount)}
                             </td>
                           </tr>
                         ))
@@ -638,7 +659,7 @@ export const AdminDashboardPage = () => {
                   description: '',
                   logoUrl: 'https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?w=200',
                   coverImage: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200',
-                  targetAmount: 50000,
+                  targetAmount: 500000,
                   isFeatured: false
                 });
               }}
@@ -664,7 +685,7 @@ export const AdminDashboardPage = () => {
                 <div className="pt-3 border-t border-white/5 space-y-2">
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-400">Raised:</span>
-                    <span className="font-bold text-white">${Number(c.raised_amount).toLocaleString()}</span>
+                    <span className="font-bold text-white">{formatINR(c.raised_amount)}</span>
                   </div>
 
                   <div className="flex items-center space-x-2 pt-1">
@@ -759,7 +780,7 @@ export const AdminDashboardPage = () => {
                       </span>
                     </td>
                     <td className="py-3.5 px-4 font-display font-bold text-white">
-                      ${Number(w.prize_amount).toLocaleString()}
+                      {formatINR(w.prize_amount)}
                     </td>
                     <td className="py-3.5 px-4">
                       {w.proof_url ? (
@@ -805,7 +826,7 @@ export const AdminDashboardPage = () => {
                           onClick={() => handlePayoutWinner(w.id)}
                           className="px-3 py-1.5 rounded-lg bg-brand-mint/20 hover:bg-brand-mint/30 text-brand-mint text-[11px] font-bold"
                         >
-                          Payout $
+                          Payout ₹
                         </button>
                       )}
                     </td>
@@ -844,7 +865,7 @@ export const AdminDashboardPage = () => {
             <div className="p-6 rounded-3xl bg-dark-900/80 border border-white/10 space-y-1">
               <div className="text-xs text-slate-400 font-semibold uppercase">Current Jackpot Rollover</div>
               <div className="text-3xl font-display font-black text-brand-coral">
-                ${Number(reportMetrics.prizePool.currentRollover).toLocaleString()}
+                {formatINR(reportMetrics.prizePool.currentRollover)}
               </div>
               <div className="text-[11px] text-slate-400">
                 100% carried forward to next draw
@@ -854,7 +875,7 @@ export const AdminDashboardPage = () => {
             <div className="p-6 rounded-3xl bg-dark-900/80 border border-white/10 space-y-1">
               <div className="text-xs text-slate-400 font-semibold uppercase">Total Payouts Distributed</div>
               <div className="text-3xl font-display font-black text-brand-mint">
-                ${Number(reportMetrics.prizePool.totalPayoutsPaid).toLocaleString()}
+                {formatINR(reportMetrics.prizePool.totalPayoutsPaid)}
               </div>
               <div className="text-[11px] text-slate-400">
                 Across {reportMetrics.prizePool.totalWinnersCount} verified winners
@@ -864,10 +885,10 @@ export const AdminDashboardPage = () => {
             <div className="p-6 rounded-3xl bg-dark-900/80 border border-white/10 space-y-1">
               <div className="text-xs text-slate-400 font-semibold uppercase">Charity Contributions</div>
               <div className="text-3xl font-display font-black text-white">
-                ${Number(reportMetrics.charity.total_charity_contributions).toLocaleString()}
+                {formatINR(reportMetrics.charity.total_charity_contributions)}
               </div>
               <div className="text-[11px] text-brand-mint font-medium">
-                Split: ${Number(reportMetrics.charity.subscription_charity_split).toFixed(0)} | Direct: ${Number(reportMetrics.charity.direct_donations_total).toFixed(0)}
+                Split: {formatINR(reportMetrics.charity.subscription_charity_split)} | Direct: {formatINR(reportMetrics.charity.direct_donations_total)}
               </div>
             </div>
           </div>
@@ -920,8 +941,8 @@ export const AdminDashboardPage = () => {
                     <tr key={c.id}>
                       <td className="p-3 font-semibold text-white">{c.name}</td>
                       <td className="p-3 text-slate-400">{c.category}</td>
-                      <td className="p-3 font-bold text-brand-mint">${Number(c.raised_amount).toLocaleString()}</td>
-                      <td className="p-3 text-slate-400">${Number(c.target_amount).toLocaleString()}</td>
+                      <td className="p-3 font-bold text-brand-mint">{formatINR(c.raised_amount)}</td>
+                      <td className="p-3 text-slate-400">{formatINR(c.target_amount)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -942,7 +963,7 @@ export const AdminDashboardPage = () => {
                   Verification for {reviewingWinner.user_name}
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Prize: ${Number(reviewingWinner.prize_amount).toLocaleString()} ({reviewingWinner.match_type})
+                  Prize: {formatINR(reviewingWinner.prize_amount)} ({reviewingWinner.match_type})
                 </p>
               </div>
               <button
@@ -1047,8 +1068,8 @@ export const AdminDashboardPage = () => {
                 onChange={(e) => setEditingUser({ ...editingUser, subscription_plan: e.target.value })}
                 className="w-full px-3 py-2 rounded-xl bg-dark-950 border border-white/10 text-xs text-white"
               >
-                <option value="monthly">Monthly ($19)</option>
-                <option value="yearly">Yearly ($190)</option>
+                <option value="monthly">Monthly (₹499)</option>
+                <option value="yearly">Yearly (₹4,990)</option>
                 <option value="none">None</option>
               </select>
             </div>
@@ -1205,7 +1226,7 @@ export const AdminDashboardPage = () => {
 
             <div className="grid grid-cols-2 gap-3 items-center">
               <div>
-                <label className="text-xs text-slate-400">Target Goal ($)</label>
+                <label className="text-xs text-slate-400">Target Goal (₹)</label>
                 <input
                   type="number"
                   value={charityFormData.targetAmount}

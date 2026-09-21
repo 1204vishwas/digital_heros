@@ -64,12 +64,51 @@ VITE_ENABLE_MOCK_CHECKOUT=true
 
 ## 🔑 Pre-Seeded Test Credentials
 
-The database is pre-seeded with sample users, historical scores, charities, past draws, and sample winning tickets with uploaded proof screenshots. You can log in manually or click the **one-click quick login buttons** on the `/auth` page:
+The database is pre-seeded with sample users, historical scores, charities, past draws, and sample winning tickets with uploaded proof screenshots. You can log in manually or click the **one-click quick login buttons** on the [`/login`](http://localhost:5173/login) page:
 
 | Role | Email | Password | Access & Features |
 |---|---|---|---|
-| **Golfer / Subscriber** | `golfer@digitalheroes.com` | `golfer123` | Active $19/mo subscriber (Callum Vance), 5 rolling Stableford scores, 15% charity split to *Birdies for Brain Tumors*, ticket in active pool, winner claim history. |
+| **Golfer / Subscriber** | `golfer@digitalheroes.com` | `golfer123` | Active ₹499/mo subscriber (Callum Vance), 5 rolling Stableford scores, 15% charity split to *Birdies for Brain Tumors*, ticket in active pool, winner claim history, **ACTIVITY STATUS: COMPLETED ✓**. |
 | **Platform Administrator** | `admin@digitalheroes.com` | `admin123` | Full control across all 5 admin surfaces: User management, Draw simulator & publisher, Charity CRUD, Winner verification & payout completion, Reports & analytics. |
+
+---
+
+## 🇮🇳 Indian Rupee Currency System (INR `₹`)
+
+All financial mechanics across the platform are natively formatted according to the **Indian Numbering System** (`en-IN`, e.g., `₹14,25,000`, `₹499`, `₹4,990`):
+- **Monthly Subscription**: `₹499 / month`
+- **Yearly Subscription**: `₹4,990 / year` (Save ₹998 with 2 months free)
+- **Charity Guarantee**: Minimum 10% of subscription directed to chosen charity
+- **Starting Jackpot Rollover**: Seeded at `₹14,25,000` with rolling jackpot accumulation
+- **Direct Donations**: Preset buttons `₹100`, `₹250`, `₹500`, `₹1,000`, `₹2,500` + custom amount
+
+---
+
+## 🏆 Automatic Person Activity Completion Tracking
+
+A real-time, dynamic **Activity Completion Engine** tracks subscriber participation status across the platform:
+- **Condition 1**: Active subscription (`status === 'active'`)
+- **Condition 2**: Charity configured with minimum 10% voluntary allocation
+- **Condition 3**: Exactly 5 rolling Stableford scores entered (1–45)
+- **Automatic Status Display**:
+  - **`ACTIVITY STATUS: COMPLETED ✓`** (Emerald glow + 100% progress bar) when all 3 conditions are satisfied. User is 100% eligible for the monthly cash draw!
+  - **`ACTIVITY STATUS: IN PROGRESS (X/3 DONE)`** (Amber indicator) with interactive step checklist guiding the golfer to complete remaining requirements.
+  - Dynamically updates immediately when scores are added, edited, or deleted.
+  - Reflected in the top **Navbar** chip, the **Golfer Dashboard**, and the **Admin Surface 01** user table.
+
+---
+
+## 🌐 1-Click Social Sign-In (Google & Facebook)
+
+Both the **[`/signup`](http://localhost:5173/signup)** and **[`/login`](http://localhost:5173/login)** pages feature 1-click Social Authentication with Google and Facebook:
+- **Sign Up with Google / Facebook**:
+  - Automatically captures user profile (e.g. Callum Vance, Arjun Patel, or custom profile).
+  - Pairs directly with the golfer's chosen subscription plan (`₹499/mo` or `₹4,990/yr`) and charity allocation.
+  - Immediately creates the active subscription account and issues an authenticated session token.
+- **Sign In with Google / Facebook**:
+  - One-click account picker with preset identities or custom Google/Facebook credentials.
+  - Bypasses password entry and directly launches the authenticated portal.
+- **Backend API**: Powered by `POST /api/auth/social-login`, creating or retrieving subscriber accounts safely and seamlessly.
 
 ---
 
@@ -97,16 +136,17 @@ The database is pre-seeded with sample users, historical scores, charities, past
 ### § 01 & § 12 · UI / UX ("Feel, not fairway")
 - [x] Emotion-driven, high-contrast dark editorial aesthetic (slate `#0B0F17`, coral `#FF5A36`, mint `#10B981`, amber `#F59E0B`).
 - [x] Deliberately avoids golf clichés (no fairways, plaid, or club clipart).
-- [x] Homepage features live jackpot ticker, countdown clock to next monthly draw, how-it-works interactive 3-step breakdown, and prominent subscription CTA.
+- [x] Dedicated [`/login`](http://localhost:5173/login) and [`/signup`](http://localhost:5173/signup) standalone pages with 1-click test credentials and interactive charity/plan selection.
+- [x] Homepage features live jackpot ticker formatted in INR (`₹`), countdown clock to next monthly draw, how-it-works interactive 3-step breakdown, and prominent subscription CTA.
 - [x] Fully responsive across mobile, tablet, and desktop screens.
 
 ### § 03 · Three Distinct User Roles
 - [x] **Public Visitor**: Explores platform concept, browses charities, inspects draw mechanics, initiates subscription.
-- [x] **Registered Subscriber**: Manages profile, inputs/edits 5 rolling scores, chooses charity recipient & voluntary percentage, tracks tickets and winnings, submits scorecard proof.
-- [x] **Administrator**: Accesses the 5 PRD control surfaces, runs simulations, configures draw algorithms, approves/rejects winner proofs, marks payouts, monitors platform analytics.
+- [x] **Registered Subscriber**: Manages profile, inputs/edits 5 rolling scores, chooses charity recipient & voluntary percentage, tracks tickets and winnings, submits scorecard proof, monitors Activity Completion status.
+- [x] **Administrator**: Accesses the 5 PRD control surfaces, runs simulations, configures draw algorithms, approves/rejects winner proofs, marks payouts, monitors platform analytics, inspects subscriber activity status.
 
 ### § 04 · Subscription & Payment System
-- [x] Plans: Monthly ($19/mo) and Yearly ($190/yr discounted rate — 2 months free).
+- [x] Plans: Monthly (₹499/mo) and Yearly (₹4,990/yr discounted rate — 2 months free).
 - [x] Real-time subscription check on protected endpoints.
 - [x] Handles active, renewal date, cancellation, and lapsed subscription states.
 - [x] Simulated PCI-compliant checkout workflow.
@@ -127,16 +167,16 @@ The database is pre-seeded with sample users, historical scores, charities, past
   - 5-Number match: **40%** share — **Jackpot Rollover: Yes** (rolls forward if unclaimed).
   - 4-Number match: **35%** share — Rollover: No.
   - 3-Number match: **25%** share — Rollover: No.
-- [x] Auto-calculation of tier pool sizes based on active paying subscriber counts.
+- [x] Auto-calculation of tier pool sizes in INR (`₹`) based on active paying subscriber counts.
 - [x] Equal splitting among multiple winners within the same match tier.
 - [x] **Admin Simulation Before Publish**: Admins can preview simulated winning numbers, subscriber matches, and payout totals before committing.
 
 ### § 08 · Charity System
 - [x] Minimum 10% subscription fee guaranteed to charity.
 - [x] Voluntary slider allows subscribers to increase their contribution percentage (up to 50%+).
-- [x] **Independent Direct Donation option**: Non-gameplay direct gifts with customizable amounts and messages.
+- [x] **Independent Direct Donation option**: Non-gameplay direct gifts with customizable INR amounts (`₹100` - `₹2,500`) and messages.
 - [x] **Charity Directory**: Search and category filtering (Youth, Health, Environment, Veterans, Mental Health, Accessibility).
-- [x] **Charity Profiles**: Mission overview, progress bars towards annual targets, and upcoming golf days/events.
+- [x] **Charity Profiles**: Mission overview, progress bars towards annual targets in INR, and upcoming golf days/events.
 - [x] **Homepage Spotlight**: Featured charity section on landing page.
 
 ### § 09 · Winner Verification & Payout Workflow
@@ -147,17 +187,18 @@ The database is pre-seeded with sample users, historical scores, charities, past
 
 ### § 10 · User Dashboard (All 5 Modules)
 - [x] 1. Subscription status badge, renewal date, plan switcher, cancel/reactivate.
-- [x] 2. 5-Score entry, edit, and deletion interface with rolling eviction notices.
-- [x] 3. Selected charity badge and interactive contribution percentage slider.
-- [x] 4. Participation summary with active 5-number monthly ticket and draw countdown.
-- [x] 5. Winnings overview with prize claim records, payout statuses, and proof upload dialog.
+- [x] 2. **Automatic Activity Completion Tracker** with 3-step dynamic checklist & eligibility indicator.
+- [x] 3. 5-Score entry, edit, and deletion interface with rolling eviction notices.
+- [x] 4. Selected charity badge and interactive contribution percentage slider.
+- [x] 5. Participation summary with active 5-number monthly ticket and draw countdown.
+- [x] 6. Winnings overview with prize claim records, payout statuses, and proof upload dialog.
 
 ### § 11 · Admin Dashboard (All 5 Control Surfaces)
-- [x] **01 User Management**: View/edit user profiles, adjust subscriptions, directly edit golf scores.
-- [x] **02 Draw Management**: Configure Random vs Algorithmic mode, run simulations, view simulated winners, publish official draw, manage rollover jackpot.
-- [x] **03 Charity Management**: Add, edit, delete charities, manage media URLs, add upcoming golf days.
-- [x] **04 Winners Management**: View all winners across draws, filter by status, inspect proof screenshot modal, approve/reject, mark payouts as paid.
-- [x] **05 Reports & Analytics**: Total users, active subscribers, total prize pool history, current rollover, charity fund totals, and active score frequency bar chart (1–45).
+- [x] **01 User Management**: View/edit user profiles, adjust subscriptions, directly edit golf scores, and monitor **Activity Completion** status.
+- [x] **02 Draw Management**: Configure Random vs Algorithmic mode, run simulations, view simulated winners in INR, publish official draw, manage rollover jackpot.
+- [x] **03 Charity Management**: Add, edit, delete charities, manage media URLs, add upcoming golf days, set target goals in INR.
+- [x] **04 Winners Management**: View all winners across draws, filter by status, inspect proof screenshot modal, approve/reject, mark payouts as paid in INR.
+- [x] **05 Reports & Analytics**: Total users, active subscribers, total prize pool history in INR, current rollover, charity fund totals, and active score frequency bar chart (1–45).
 
 ---
 
@@ -204,18 +245,22 @@ intern/
         │   └── client.js      # Unified API client
         ├── context/
         │   └── AuthContext.jsx# Auth & subscriber state management
+        ├── utils/
+        │   └── currency.js    # Indian Rupee (INR ₹) formatting utilities
         ├── components/
-        │   ├── Navbar.jsx     # Navigation with live jackpot pill
+        │   ├── Navbar.jsx     # Navigation with live jackpot pill & Activity chip
         │   ├── Footer.jsx     # Modern editorial footer
         │   └── ProtectedRoute.jsx
         └── pages/
             ├── HomePage.jsx   # Landing page ("Feel, not fairway")
+            ├── LoginPage.jsx  # Dedicated Login with 1-click test credentials
+            ├── SignupPage.jsx # Dedicated Signup with interactive plan & charity picker
             ├── DrawMechanicsPage.jsx # Rules & interactive checker
             ├── CharityDirectoryPage.jsx # Search, filters, direct donate
             ├── CharityDetailPage.jsx    # Profile, golf days, donate modal
-            ├── UserDashboardPage.jsx    # Complete 5-module golfer dashboard
-            ├── AdminDashboardPage.jsx   # Full 5-surface control center
-            └── AuthPage.jsx   # Login & subscription signup
+            ├── UserDashboardPage.jsx    # Complete golfer dashboard + Activity Tracker
+            ├── AdminDashboardPage.jsx   # Full 5-surface control center + Activity column
+            └── AuthPage.jsx   # Legacy tabbed auth (redirects to /login)
 ```
 
 ---

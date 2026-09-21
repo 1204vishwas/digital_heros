@@ -71,9 +71,9 @@ export const drawService = {
     const rolloverSetting = db.prepare(`
       SELECT value FROM system_settings WHERE key = 'jackpot_rollover'
     `).get();
-    const currentRollover = rolloverSetting ? parseFloat(rolloverSetting.value) : 10000.0;
+    const currentRollover = rolloverSetting ? parseFloat(rolloverSetting.value) : 1425000.0;
 
-    const currentMonthPool = Math.max(subscriptionContribution, activeCount * 9.50);
+    const currentMonthPool = Math.max(subscriptionContribution, activeCount * 249.50);
     const totalPool = currentMonthPool + currentRollover;
 
     return {

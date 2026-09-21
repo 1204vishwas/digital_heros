@@ -21,6 +21,7 @@ import {
 import confetti from 'canvas-confetti';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { formatINR } from '../utils/currency';
 
 export const UserDashboardPage = () => {
   const { user, refreshUser, updateProfile, updateSubscription } = useAuth();
@@ -205,7 +206,14 @@ export const UserDashboardPage = () => {
   }
 
   const selectedCharityObj = charities.find(c => c.id === user?.charity_id) || charities[0];
-  const monthlySplitAmount = ((user?.subscription_price || 19) * (charityPct / 100)).toFixed(2);
+  const monthlySplitAmount = ((user?.subscription_price || 499) * (charityPct / 100)).toFixed(2);
+
+  // Automatic Person Activity Completion Logic (User Request)
+  const isSubActive = user?.subscription_status === 'active';
+  const isCharityConfigured = !!user?.charity_id && Number(user?.charity_percentage || charityPct) >= 10;
+  const isScoresReady = scores.length === 5;
+  const activityCompleted = isSubActive && isCharityConfigured && isScoresReady;
+  const completedTasksCount = (isSubActive ? 1 : 0) + (isCharityConfigured ? 1 : 0) + (isScoresReady ? 1 : 0);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
@@ -226,7 +234,7 @@ export const UserDashboardPage = () => {
           </p>
         </div>
 
-        {/* Quick Win Counter */}
+        {/* Quick Win Counter in INR */}
         <div className="flex items-center space-x-4 bg-dark-900/80 border border-white/10 p-3 rounded-2xl">
           <div className="p-3 rounded-xl bg-brand-coral/10 text-brand-coral">
             <Trophy className="w-6 h-6" />
@@ -234,8 +242,107 @@ export const UserDashboardPage = () => {
           <div>
             <div className="text-[10px] uppercase font-bold text-slate-400">Total Winnings Paid</div>
             <div className="text-xl font-bold font-display text-white">
-              ${participation?.totalWon ? Number(participation.totalWon).toFixed(2) : '0.00'}
+              {formatINR(participation?.totalWon || 0)}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* AUTOMATIC ACTIVITY COMPLETION TRACKER (USER REQUEST) */}
+      <div className={`p-6 sm:p-7 rounded-3xl border transition-all duration-500 shadow-xl ${
+        activityCompleted
+          ? 'bg-gradient-to-br from-brand-mint/15 via-dark-900 to-dark-900 border-brand-mint/40 ring-1 ring-brand-mint/30 shadow-glow-mint'
+          : 'bg-dark-900/80 border-brand-amber/30'
+      }`}>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2.5">
+              <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 ${
+                activityCompleted 
+                  ? 'bg-brand-mint text-dark-950 shadow-md' 
+                  : 'bg-brand-amber/20 text-brand-amber border border-brand-amber/30'
+              }`}>
+                <span className={`w-2 h-2 rounded-full ${activityCompleted ? 'bg-dark-950 animate-ping' : 'bg-brand-amber'}`}></span>
+                <span>{activityCompleted ? 'ACTIVITY STATUS: COMPLETED ✓' : `ACTIVITY STATUS: IN PROGRESS (${completedTasksCount}/3 DONE)`}</span>
+              </span>
+              <span className="text-xs text-slate-400 font-medium">March 2026 Monthly Cycle</span>
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-display font-extrabold text-white pt-1">
+              {activityCompleted 
+                ? '🎉 All Monthly Activities Done — You are officially in the draw!' 
+                : 'Complete your monthly golfer requirements to enter the upcoming draw'}
+            </h3>
+            <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+              {activityCompleted
+                ? 'Your active subscription, charity allocation, and 5 rolling Stableford scores are verified. No further action needed until draw publishing on 31 March 2026.'
+                : 'Follow the 3-step checklist below. Once all items are checked, your status will automatically switch to COMPLETED.'}
+            </p>
+          </div>
+
+          {/* Completion Percentage Badge */}
+          <div className="flex items-center space-x-3 p-3 rounded-2xl bg-dark-950/70 border border-white/5 whitespace-nowrap self-start md:self-auto">
+            <div className="text-right">
+              <div className="text-[10px] uppercase font-bold text-slate-400">Activity Progress</div>
+              <div className={`text-2xl font-black font-display ${activityCompleted ? 'text-brand-mint' : 'text-brand-amber'}`}>
+                {Math.round((completedTasksCount / 3) * 100)}%
+              </div>
+            </div>
+            <div className={`w-11 h-11 rounded-full flex items-center justify-center border-2 font-black text-xs ${
+              activityCompleted 
+                ? 'border-brand-mint text-brand-mint bg-brand-mint/10' 
+                : 'border-brand-amber text-brand-amber bg-brand-amber/10'
+            }`}>
+              {completedTasksCount}/3
+            </div>
+          </div>
+        </div>
+
+        {/* 3 Step Interactive Checklist */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-5 mt-5 border-t border-white/10">
+          <div className={`p-3.5 rounded-2xl border text-xs flex items-center justify-between ${
+            isSubActive ? 'bg-brand-mint/10 border-brand-mint/30 text-slate-200' : 'bg-dark-950 border-white/5 text-slate-400'
+          }`}>
+            <div>
+              <div className="font-bold text-white flex items-center space-x-1.5">
+                <span>1. Subscription</span>
+                {isSubActive && <CheckCircle2 className="w-3.5 h-3.5 text-brand-mint" />}
+              </div>
+              <div className="text-[11px] text-slate-400 mt-0.5">{isSubActive ? `${user.subscription_plan} plan active` : 'Plan inactive'}</div>
+            </div>
+            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded ${isSubActive ? 'bg-brand-mint/20 text-brand-mint' : 'bg-white/10 text-slate-400'}`}>
+              {isSubActive ? 'Done ✓' : 'Incomplete'}
+            </span>
+          </div>
+
+          <div className={`p-3.5 rounded-2xl border text-xs flex items-center justify-between ${
+            isCharityConfigured ? 'bg-brand-mint/10 border-brand-mint/30 text-slate-200' : 'bg-dark-950 border-white/5 text-slate-400'
+          }`}>
+            <div>
+              <div className="font-bold text-white flex items-center space-x-1.5">
+                <span>2. Charity Set</span>
+                {isCharityConfigured && <CheckCircle2 className="w-3.5 h-3.5 text-brand-mint" />}
+              </div>
+              <div className="text-[11px] text-slate-400 mt-0.5">{selectedCharityObj ? `${selectedCharityObj.name.slice(0, 16)}... (${charityPct}%)` : 'Select charity'}</div>
+            </div>
+            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded ${isCharityConfigured ? 'bg-brand-mint/20 text-brand-mint' : 'bg-white/10 text-slate-400'}`}>
+              {isCharityConfigured ? 'Done ✓' : 'Incomplete'}
+            </span>
+          </div>
+
+          <div className={`p-3.5 rounded-2xl border text-xs flex items-center justify-between ${
+            isScoresReady ? 'bg-brand-mint/10 border-brand-mint/30 text-slate-200' : 'bg-dark-950 border-white/5 text-slate-400'
+          }`}>
+            <div>
+              <div className="font-bold text-white flex items-center space-x-1.5">
+                <span>3. 5 Rolling Scores</span>
+                {isScoresReady && <CheckCircle2 className="w-3.5 h-3.5 text-brand-mint" />}
+              </div>
+              <div className="text-[11px] text-slate-400 mt-0.5">{isScoresReady ? '5/5 scores ready for draw' : `${scores.length}/5 scores logged (${5 - scores.length} more needed)`}</div>
+            </div>
+            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded ${isScoresReady ? 'bg-brand-mint/20 text-brand-mint' : 'bg-brand-amber/20 text-brand-amber'}`}>
+              {isScoresReady ? 'Done ✓' : `${scores.length}/5`}
+            </span>
           </div>
         </div>
       </div>
@@ -267,7 +374,7 @@ export const UserDashboardPage = () => {
                 {user?.subscription_plan === 'yearly' ? 'Yearly Plan (Discounted)' : 'Monthly Plan'}
               </div>
               <div className="text-slate-500 text-[11px]">
-                ${user?.subscription_price ? Number(user.subscription_price).toFixed(2) : '19.00'} / billing cycle
+                {formatINR(user?.subscription_price || 499)} / billing cycle
               </div>
             </div>
             <div>
@@ -298,7 +405,7 @@ export const UserDashboardPage = () => {
                 }}
                 className="px-5 py-2.5 rounded-xl bg-brand-coral hover:bg-brand-coral-hover text-white text-xs font-bold transition shadow-glow-coral"
               >
-                Reactivate Subscription ($19/mo)
+                Reactivate Subscription (₹499/mo)
               </button>
             )}
 
@@ -309,7 +416,7 @@ export const UserDashboardPage = () => {
               }}
               className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-slate-300 transition font-semibold"
             >
-              Switch to {user?.subscription_plan === 'yearly' ? 'Monthly ($19/mo)' : 'Yearly ($190/yr - Save 2 Mo)'}
+              Switch to {user?.subscription_plan === 'yearly' ? 'Monthly (₹499/mo)' : 'Yearly (₹4,990/yr - Save ₹998)'}
             </button>
           </div>
         </div>
@@ -580,7 +687,7 @@ export const UserDashboardPage = () => {
               <div className="text-right">
                 <div className="text-xs text-slate-400 font-medium">Monthly Allocation:</div>
                 <div className="text-xl font-bold font-display text-white">
-                  ${monthlySplitAmount} / month
+                  {formatINR(monthlySplitAmount)} / month
                 </div>
               </div>
             </div>
@@ -636,7 +743,7 @@ export const UserDashboardPage = () => {
 
           <div className="text-xs text-right">
             <span className="text-slate-400">Pending Claims: </span>
-            <strong className="text-brand-coral">${Number(participation?.pendingWon || 0).toFixed(2)}</strong>
+            <strong className="text-brand-coral">{formatINR(participation?.pendingWon || 0)}</strong>
           </div>
         </div>
 
@@ -674,7 +781,7 @@ export const UserDashboardPage = () => {
                       [{w.matched_numbers.join(', ')}]
                     </td>
                     <td className="py-3.5 px-4 font-display font-bold text-white text-sm">
-                      ${Number(w.prize_amount).toLocaleString()}
+                      {formatINR(w.prize_amount)}
                     </td>
                     <td className="py-3.5 px-4">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold capitalize ${
@@ -731,7 +838,7 @@ export const UserDashboardPage = () => {
                   Winner Verification (PRD § 09)
                 </span>
                 <h3 className="text-xl font-display font-bold text-white mt-1">
-                  Claim Prize of ${Number(uploadWinnerTicket.prize_amount).toLocaleString()}
+                  Claim Prize of {formatINR(uploadWinnerTicket.prize_amount)}
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">
                   Draw: {uploadWinnerTicket.draw_code} ({uploadWinnerTicket.match_type})

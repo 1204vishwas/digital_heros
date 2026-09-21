@@ -17,16 +17,17 @@ import {
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { formatINR } from '../utils/currency';
 
 export const HomePage = () => {
   const { user } = useAuth();
   const [poolData, setPoolData] = useState({
-    totalPool: 14991,
-    tier5Pool: 14546,
-    tier4Pool: 259,
-    tier3Pool: 185,
+    totalPool: 1444461,
+    tier5Pool: 1432784,
+    tier4Pool: 6811,
+    tier3Pool: 4865,
     activeSubscribersCount: 15,
-    currentRollover: 14250
+    currentRollover: 1425000
   });
   const [featuredCharity, setFeaturedCharity] = useState(null);
   const [latestDraw, setLatestDraw] = useState(null);
@@ -106,10 +107,10 @@ export const HomePage = () => {
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
                 <Link
-                  to={user ? "/dashboard" : "/auth?tab=register"}
+                  to={user ? "/dashboard" : "/signup"}
                   className="px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-coral to-brand-coral-hover text-white font-bold text-base shadow-glow-coral hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all text-center flex items-center justify-center space-x-2.5"
                 >
-                  <span>{user ? "View My Dashboard" : "Join the Draw — From $19/mo"}</span>
+                  <span>{user ? "View My Dashboard" : "Join the Draw — From ₹499/mo"}</span>
                   <ArrowRight className="w-5 h-5" />
                 </Link>
 
@@ -161,13 +162,12 @@ export const HomePage = () => {
                   {/* Main Amount */}
                   <div className="space-y-1">
                     <div className="text-xs text-slate-400 font-medium">Grand 5-Match Pool</div>
-                    <div className="text-5xl sm:text-6xl font-black font-display text-white tracking-tight flex items-baseline">
-                      <span className="text-brand-coral text-3xl sm:text-4xl mr-1">$</span>
-                      {Number(poolData.tier5Pool || 14546).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                    <div className="text-4xl sm:text-5xl font-black font-display text-white tracking-tight flex items-baseline">
+                      <span className="text-brand-coral">{formatINR(poolData.tier5Pool || 1432784)}</span>
                     </div>
                     <div className="text-xs text-brand-mint flex items-center space-x-1 pt-1 font-medium">
                       <TrendingUp className="w-3.5 h-3.5" />
-                      <span>Includes ${Number(poolData.currentRollover || 14250).toLocaleString()} rollover from previous unclaimed draws!</span>
+                      <span>Includes {formatINR(poolData.currentRollover || 1425000)} rollover from previous unclaimed draws!</span>
                     </div>
                   </div>
 
@@ -207,20 +207,20 @@ export const HomePage = () => {
                         <span className="w-2 h-2 rounded-full bg-brand-coral"></span>
                         <span className="text-slate-300 font-medium">4-Number Match (35%)</span>
                       </div>
-                      <span className="font-bold text-white">${Number(poolData.tier4Pool || 259).toLocaleString()}</span>
+                      <span className="font-bold text-white">{formatINR(poolData.tier4Pool || 6811)}</span>
                     </div>
                     <div className="flex justify-between items-center py-2 px-3 rounded-lg bg-white/5 border border-white/5">
                       <div className="flex items-center space-x-2">
                         <span className="w-2 h-2 rounded-full bg-brand-amber"></span>
                         <span className="text-slate-300 font-medium">3-Number Match (25%)</span>
                       </div>
-                      <span className="font-bold text-white">${Number(poolData.tier3Pool || 185).toLocaleString()}</span>
+                      <span className="font-bold text-white">{formatINR(poolData.tier3Pool || 4865)}</span>
                     </div>
                   </div>
 
                   {/* Quick Card Action */}
                   <Link
-                    to={user ? "/dashboard" : "/auth?tab=register"}
+                    to={user ? "/dashboard" : "/signup"}
                     className="w-full py-3.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-sm transition text-center block border border-white/10"
                   >
                     {user ? "View My 5 Rolling Numbers" : "Subscribe to Enter Next Draw"}
@@ -259,7 +259,7 @@ export const HomePage = () => {
               Subscribe & Direct
             </h3>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">
-              Choose a monthly plan ($19) or yearly discounted plan ($190). Select any accredited charity to receive a minimum 10% of your fee automatically.
+              Choose a monthly plan (₹499) or yearly discounted plan (₹4,990). Select any accredited charity to receive a minimum 10% of your fee automatically.
             </p>
             <div className="pt-4 border-t border-white/5 flex items-center space-x-2 text-xs text-slate-400">
               <CheckCircle2 className="w-4 h-4 text-brand-mint" />
@@ -330,10 +330,10 @@ export const HomePage = () => {
                 <div className="space-y-2 pt-2">
                   <div className="flex justify-between text-xs font-semibold">
                     <span className="text-brand-coral">
-                      ${Number(featuredCharity.raised_amount).toLocaleString()} raised so far
+                      {formatINR(featuredCharity.raised_amount)} raised so far
                     </span>
                     <span className="text-slate-400">
-                      Goal: ${Number(featuredCharity.target_amount).toLocaleString()}
+                      Goal: {formatINR(featuredCharity.target_amount)}
                     </span>
                   </div>
                   <div className="w-full h-3 rounded-full bg-dark-950 overflow-hidden border border-white/10">
@@ -426,7 +426,7 @@ export const HomePage = () => {
                     Split equally among all 5-match winners; carries over if unclaimed
                   </td>
                   <td className="py-4 px-4 text-right font-display font-bold text-white">
-                    ${Number(poolData.tier5Pool || 14546).toLocaleString()}
+                    {formatINR(poolData.tier5Pool || 1432784)}
                   </td>
                 </tr>
 
@@ -445,7 +445,7 @@ export const HomePage = () => {
                     Split equally among all 4-match winners
                   </td>
                   <td className="py-4 px-4 text-right font-display font-bold text-white">
-                    ${Number(poolData.tier4Pool || 259).toLocaleString()}
+                    {formatINR(poolData.tier4Pool || 6811)}
                   </td>
                 </tr>
 
@@ -464,7 +464,7 @@ export const HomePage = () => {
                     Split equally among all 3-match winners
                   </td>
                   <td className="py-4 px-4 text-right font-display font-bold text-white">
-                    ${Number(poolData.tier3Pool || 185).toLocaleString()}
+                    {formatINR(poolData.tier3Pool || 4865)}
                   </td>
                 </tr>
               </tbody>
@@ -518,7 +518,7 @@ export const HomePage = () => {
           </p>
           <div className="pt-2">
             <Link
-              to={user ? "/dashboard" : "/auth?tab=register"}
+              to={user ? "/dashboard" : "/signup"}
               className="inline-flex items-center space-x-2 px-8 py-4 rounded-2xl bg-brand-coral hover:bg-brand-coral-hover text-white font-bold text-base shadow-glow-coral transition transform hover:-translate-y-0.5"
             >
               <span>{user ? "Manage My Scores & Draw" : "Join Now — Instant Access"}</span>

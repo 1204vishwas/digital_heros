@@ -15,12 +15,15 @@ import {
   ChevronRight
 } from 'lucide-react';
 
+import { formatINR } from '../utils/currency';
+
 export const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currentJackpot, setCurrentJackpot] = useState(14250);
+  const [currentJackpot, setCurrentJackpot] = useState(1425000);
+  const [userScoreCount, setUserScoreCount] = useState(0);
 
   useEffect(() => {
     // Fetch live jackpot pool
@@ -31,7 +34,15 @@ export const Navbar = () => {
         }
       })
       .catch(() => {});
-  }, [location.pathname]);
+
+    if (user && user.role !== 'admin') {
+      api.scores.get()
+        .then(res => {
+          setUserScoreCount((res.scores || []).length);
+        })
+        .catch(() => {});
+    }
+  }, [location.pathname, user]);
 
   const handleLogout = () => {
     logout();
@@ -132,13 +143,33 @@ export const Navbar = () => {
                 Jackpot:
               </span>
               <span className="text-sm font-display font-bold text-white tracking-wide">
-                ${Number(currentJackpot).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                {formatINR(currentJackpot)}
               </span>
             </div>
 
             {/* Auth Buttons */}
             {user ? (
               <div className="flex items-center space-x-3 pl-2">
+                {/* Real-time Activity Status Chip for Subscriber */}
+                {user.role !== 'admin' && (
+                  <Link
+                    to="/dashboard"
+                    className={`hidden xl:flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition ${
+                      user.subscription_status === 'active' && userScoreCount >= 5
+                        ? 'bg-brand-mint/10 border-brand-mint/30 text-brand-mint shadow-glow-mint'
+                        : 'bg-brand-amber/10 border-brand-amber/30 text-brand-amber'
+                    }`}
+                    title={user.subscription_status === 'active' && userScoreCount >= 5 ? 'All activities done!' : 'Score logging required'}
+                  >
+                    <span className={`w-2 h-2 rounded-full ${user.subscription_status === 'active' && userScoreCount >= 5 ? 'bg-brand-mint animate-pulse' : 'bg-brand-amber'}`}></span>
+                    <span>
+                      {user.subscription_status === 'active' && userScoreCount >= 5 
+                        ? 'Activity: Completed ✓' 
+                        : `Activity: ${userScoreCount}/5 Scores`}
+                    </span>
+                  </Link>
+                )}
+
                 <Link
                   to="/dashboard"
                   className="flex items-center space-x-2.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition"
@@ -167,16 +198,16 @@ export const Navbar = () => {
             ) : (
               <div className="flex items-center space-x-3">
                 <Link
-                  to="/auth"
+                  to="/login"
                   className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white transition"
                 >
                   Sign In
                 </Link>
                 <Link
-                  to="/auth?tab=register"
+                  to="/signup"
                   className="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-brand-coral to-brand-coral-hover shadow-glow-coral hover:opacity-95 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  Join the Draw
+                  Join the Draw (₹499/mo)
                 </Link>
               </div>
             )}
@@ -201,7 +232,7 @@ export const Navbar = () => {
           <div className="flex items-center justify-between py-2 px-3 bg-dark-850 rounded-lg border border-white/5">
             <span className="text-xs text-slate-400 uppercase font-semibold">Active Jackpot</span>
             <span className="text-sm font-bold text-brand-coral">
-              ${Number(currentJackpot).toLocaleString()}
+              {formatINR(currentJackpot)}
             </span>
           </div>
 
@@ -250,6 +281,11 @@ export const Navbar = () => {
                 <div>
                   <p className="font-semibold text-white">{user.name}</p>
                   <p className="text-xs text-slate-400">{user.email}</p>
+                  {user.role !== 'admin' && (
+                    <span className={`text-[10px] font-bold ${user.subscription_status === 'active' && userScoreCount >= 5 ? 'text-brand-mint' : 'text-brand-amber'}`}>
+                      {user.subscription_status === 'active' && userScoreCount >= 5 ? 'Activity: Completed ✓' : `Activity: ${userScoreCount}/5 scores logged`}
+                    </span>
+                  )}
                 </div>
                 <button
                   onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
@@ -261,14 +297,14 @@ export const Navbar = () => {
             ) : (
               <div className="grid grid-cols-2 gap-3">
                 <Link
-                  to="/auth"
+                  to="/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center py-2.5 rounded-xl text-sm font-semibold bg-white/5 text-white"
                 >
                   Sign In
                 </Link>
                 <Link
-                  to="/auth?tab=register"
+                  to="/signup"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center py-2.5 rounded-xl text-sm font-bold bg-brand-coral text-white"
                 >

@@ -35,12 +35,12 @@ router.post('/register', (req, res) => {
 
     // Calculate subscription plan pricing & initial state
     let subStatus = 'active';
-    let price = 19.0;
+    let price = 499.0;
     const now = new Date();
     let renewalDate = new Date();
 
     if (plan === 'yearly') {
-      price = 190.0; // 2 months discount
+      price = 4990.0; // 2 months discount (Save ₹998)
       renewalDate.setFullYear(now.getFullYear() + 1);
     } else {
       renewalDate.setMonth(now.getMonth() + 1);
@@ -116,6 +116,89 @@ router.post('/login', (req, res) => {
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: err.message || 'Login failed' });
+  }
+});
+
+// POST /api/auth/social-login
+router.post('/social-login', (req, res) => {
+  try {
+    const { 
+      provider = 'google', 
+      email, 
+      name, 
+      plan = 'monthly', 
+      charityId = null, 
+      charityPercentage = 15 
+    } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required for social authentication' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    let user = db.prepare(`
+      SELECT u.id, u.name, u.email, u.role, u.subscription_plan,
+             u.subscription_status, u.subscription_price, u.renewal_date,
+             u.charity_id, u.charity_percentage,
+             c.name as charity_name, c.logo_url as charity_logo
+      FROM users u
+      LEFT JOIN charities c ON u.charity_id = c.id
+      WHERE u.email = ?
+    `).get(cleanEmail);
+
+    if (!user) {
+      // Create new subscriber with social profile
+      const pct = Math.max(10, parseFloat(charityPercentage) || 15);
+      const randomPassword = bcrypt.hashSync(`social-${provider}-${Date.now()}-${Math.random()}`, 10);
+      
+      let price = plan === 'yearly' ? 4990.0 : 499.0;
+      const now = new Date();
+      let renewalDate = new Date();
+      if (plan === 'yearly') {
+        renewalDate.setFullYear(now.getFullYear() + 1);
+      } else {
+        renewalDate.setMonth(now.getMonth() + 1);
+      }
+
+      let targetCharityId = charityId;
+      if (!targetCharityId) {
+        const firstCharity = db.prepare('SELECT id FROM charities LIMIT 1').get();
+        targetCharityId = firstCharity ? firstCharity.id : null;
+      }
+
+      const userName = name && name.trim().length > 0 ? name.trim() : cleanEmail.split('@')[0];
+
+      const result = db.prepare(`
+        INSERT INTO users (
+          name, email, password_hash, role, subscription_plan, subscription_status,
+          subscription_price, renewal_date, charity_id, charity_percentage
+        ) VALUES (?, ?, ?, 'subscriber', ?, 'active', ?, ?, ?, ?)
+      `).run(
+        userName,
+        cleanEmail,
+        randomPassword,
+        plan,
+        price,
+        renewalDate.toISOString().split('T')[0],
+        targetCharityId,
+        pct
+      );
+
+      user = db.prepare(`
+        SELECT u.id, u.name, u.email, u.role, u.subscription_plan, u.subscription_status,
+               u.subscription_price, u.renewal_date, u.charity_id, u.charity_percentage,
+               c.name as charity_name, c.logo_url as charity_logo
+        FROM users u
+        LEFT JOIN charities c ON u.charity_id = c.id
+        WHERE u.id = ?
+      `).get(result.lastInsertRowid);
+    }
+
+    const token = signToken(user);
+    res.json({ token, user, provider });
+  } catch (err) {
+    console.error('Social login error:', err);
+    res.status(500).json({ error: err.message || 'Social authentication failed' });
   }
 });
 
@@ -199,7 +282,7 @@ router.post('/subscription', authenticateToken, (req, res) => {
     } else if (action === 'reactivate' || action === 'subscribe' || action === 'change_plan') {
       newStatus = 'active';
       newPlan = plan === 'yearly' ? 'yearly' : 'monthly';
-      price = newPlan === 'yearly' ? 190.0 : 19.0;
+      price = newPlan === 'yearly' ? 4990.0 : 499.0;
       if (newPlan === 'yearly') {
         renewalDate.setFullYear(now.getFullYear() + 1);
       } else {

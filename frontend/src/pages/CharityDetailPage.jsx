@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { formatINR } from '../utils/currency';
 
 export const CharityDetailPage = () => {
   const { slug } = useParams();
@@ -22,7 +23,7 @@ export const CharityDetailPage = () => {
 
   // Donation state
   const [showDonateModal, setShowDonateModal] = useState(false);
-  const [donationAmount, setDonationAmount] = useState('50');
+  const [donationAmount, setDonationAmount] = useState('500');
   const [donorName, setDonorName] = useState(user?.name || '');
   const [donationNote, setDonationNote] = useState('');
   const [donateSuccess, setDonateSuccess] = useState(false);
@@ -258,10 +259,10 @@ export const CharityDetailPage = () => {
 
             <div className="space-y-1.5">
               <div className="text-3xl font-display font-black text-white">
-                ${Number(charity.raised_amount).toLocaleString()}
+                {formatINR(charity.raised_amount)}
               </div>
               <div className="text-xs text-slate-400">
-                Pledged toward annual goal of ${Number(charity.target_amount).toLocaleString()}
+                Pledged toward annual goal of {formatINR(charity.target_amount)}
               </div>
             </div>
 
@@ -300,7 +301,7 @@ export const CharityDetailPage = () => {
                       <div className="font-semibold text-white">{d.donor_name || 'Anonymous Hero'}</div>
                       <div className="text-[10px] text-slate-500 capitalize">{d.donation_type.replace('_', ' ')}</div>
                     </div>
-                    <div className="font-bold text-brand-mint">+${Number(d.amount).toFixed(2)}</div>
+                    <div className="font-bold text-brand-mint">+{formatINR(d.amount)}</div>
                   </div>
                 ))}
               </div>
@@ -344,8 +345,8 @@ export const CharityDetailPage = () => {
                 
                 <div>
                   <label className="text-xs text-slate-400 font-medium block mb-2">Select Donation Amount</label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {['15', '25', '50', '100'].map((amt) => (
+                  <div className="grid grid-cols-5 gap-2">
+                    {['100', '250', '500', '1000', '2500'].map((amt) => (
                       <button
                         type="button"
                         key={amt}
@@ -356,14 +357,14 @@ export const CharityDetailPage = () => {
                             : 'bg-white/5 border-white/5 text-slate-300 hover:bg-white/10'
                         }`}
                       >
-                        ${amt}
+                        ₹{amt}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-400 font-medium block mb-1">Custom Amount ($)</label>
+                  <label className="text-xs text-slate-400 font-medium block mb-1">Custom Amount (₹)</label>
                   <input
                     type="number"
                     min="1"
@@ -400,7 +401,7 @@ export const CharityDetailPage = () => {
                     disabled={isSubmitting}
                     className="w-full py-3 rounded-xl bg-brand-coral hover:bg-brand-coral-hover text-white font-bold text-sm shadow-glow-coral transition"
                   >
-                    {isSubmitting ? 'Processing...' : `Donate $${donationAmount}`}
+                    {isSubmitting ? 'Processing...' : `Donate ${formatINR(donationAmount || 0)}`}
                   </button>
                 </div>
 

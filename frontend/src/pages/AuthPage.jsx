@@ -230,7 +230,7 @@ export const AuthPage = () => {
                   }`}
                 >
                   <div className="text-xs font-bold text-white">Monthly Plan</div>
-                  <div className="text-lg font-black font-display text-white mt-0.5">$19<span className="text-xs font-normal text-slate-400">/mo</span></div>
+                  <div className="text-lg font-black font-display text-white mt-0.5">₹499<span className="text-xs font-normal text-slate-400">/mo</span></div>
                   <div className="text-[10px] text-slate-500">Billed monthly</div>
                 </div>
 
@@ -243,10 +243,10 @@ export const AuthPage = () => {
                   }`}
                 >
                   <span className="absolute -top-2 right-2 px-1.5 py-0.5 rounded bg-brand-mint text-[9px] font-bold text-dark-950">
-                    SAVE $38
+                    SAVE ₹998
                   </span>
                   <div className="text-xs font-bold text-white">Yearly Plan</div>
-                  <div className="text-lg font-black font-display text-brand-mint mt-0.5">$190<span className="text-xs font-normal text-slate-400">/yr</span></div>
+                  <div className="text-lg font-black font-display text-brand-mint mt-0.5">₹4,990<span className="text-xs font-normal text-slate-400">/yr</span></div>
                   <div className="text-[10px] text-slate-500">2 months free rate</div>
                 </div>
               </div>

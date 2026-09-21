@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { formatINR } from '../utils/currency';
 
 export const CharityDirectoryPage = () => {
   const { user, updateProfile } = useAuth();
@@ -24,7 +25,7 @@ export const CharityDirectoryPage = () => {
 
   // Direct Donation Modal state (PRD § 08.1)
   const [donateModalCharity, setDonateModalCharity] = useState(null);
-  const [donationAmount, setDonationAmount] = useState('25');
+  const [donationAmount, setDonationAmount] = useState('500');
   const [donorName, setDonorName] = useState(user?.name || '');
   const [donationNote, setDonationNote] = useState('');
   const [donateSuccess, setDonateSuccess] = useState(false);
@@ -218,8 +219,8 @@ export const CharityDirectoryPage = () => {
                   {/* Goal Progress */}
                   <div className="space-y-1.5 pt-2">
                     <div className="flex justify-between text-[11px] font-medium">
-                      <span className="text-brand-coral font-bold">${Number(c.raised_amount).toLocaleString()}</span>
-                      <span className="text-slate-400">Target: ${Number(c.target_amount).toLocaleString()}</span>
+                      <span className="text-brand-coral font-bold">{formatINR(c.raised_amount)}</span>
+                      <span className="text-slate-400">Target: {formatINR(c.target_amount)}</span>
                     </div>
                     <div className="w-full h-2 rounded-full bg-dark-950 overflow-hidden border border-white/5">
                       <div
@@ -243,7 +244,7 @@ export const CharityDirectoryPage = () => {
                       <button
                         onClick={() => {
                           setDonateModalCharity(c);
-                          setDonationAmount('25');
+                          setDonationAmount('500');
                         }}
                         className="py-2.5 px-3 rounded-xl bg-brand-coral/10 hover:bg-brand-coral/20 text-xs font-bold text-brand-coral text-center transition flex items-center justify-center space-x-1"
                       >
@@ -306,8 +307,8 @@ export const CharityDirectoryPage = () => {
                 {/* Preset amounts */}
                 <div>
                   <label className="text-xs text-slate-400 font-medium block mb-2">Select Donation Amount</label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {['10', '25', '50', '100'].map((amt) => (
+                  <div className="grid grid-cols-5 gap-2">
+                    {['100', '250', '500', '1000', '2500'].map((amt) => (
                       <button
                         type="button"
                         key={amt}
@@ -318,7 +319,7 @@ export const CharityDirectoryPage = () => {
                             : 'bg-white/5 border-white/5 text-slate-300 hover:bg-white/10'
                         }`}
                       >
-                        ${amt}
+                        ₹{amt}
                       </button>
                     ))}
                   </div>
@@ -326,7 +327,7 @@ export const CharityDirectoryPage = () => {
 
                 {/* Custom Amount */}
                 <div>
-                  <label className="text-xs text-slate-400 font-medium block mb-1">Or Custom Amount ($)</label>
+                  <label className="text-xs text-slate-400 font-medium block mb-1">Or Custom Amount (₹)</label>
                   <input
                     type="number"
                     min="1"
@@ -368,7 +369,7 @@ export const CharityDirectoryPage = () => {
                     disabled={isSubmitting}
                     className="w-full py-3 rounded-xl bg-brand-coral hover:bg-brand-coral-hover text-white font-bold text-sm shadow-glow-coral transition"
                   >
-                    {isSubmitting ? 'Processing Donation...' : `Confirm Direct Gift of $${donationAmount}`}
+                    {isSubmitting ? 'Processing Donation...' : `Confirm Direct Gift of ${formatINR(donationAmount || 0)}`}
                   </button>
                 </div>
 

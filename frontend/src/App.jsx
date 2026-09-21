@@ -11,6 +11,8 @@ import { CharityDetailPage } from './pages/CharityDetailPage';
 import { UserDashboardPage } from './pages/UserDashboardPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { AuthPage } from './pages/AuthPage';
+import { LoginPage } from './pages/LoginPage';
+import { SignupPage } from './pages/SignupPage';
 
 export const App = () => {
   return (
@@ -22,7 +24,9 @@ export const App = () => {
           <Route path="/mechanics" element={<DrawMechanicsPage />} />
           <Route path="/charities" element={<CharityDirectoryPage />} />
           <Route path="/charities/:slug" element={<CharityDetailPage />} />
-          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/auth" element={<Navigate to="/login" replace />} />
           
           {/* Protected Subscriber Route (PRD § 10) */}
           <Route 

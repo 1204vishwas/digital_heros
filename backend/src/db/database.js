@@ -23,7 +23,7 @@ const checkSetting = db.prepare('SELECT value FROM system_settings WHERE key = ?
 const insertSetting = db.prepare('INSERT INTO system_settings (key, value) VALUES (?, ?)');
 
 if (!checkSetting.get('jackpot_rollover')) {
-  insertSetting.run('jackpot_rollover', '12500.00'); // Starting seed jackpot
+  insertSetting.run('jackpot_rollover', '1250000.00'); // Starting seed jackpot (₹12,50,000)
 }
 if (!checkSetting.get('prize_pool_percentage')) {
   insertSetting.run('prize_pool_percentage', '50.0'); // 50% of subscription revenue to prize pool

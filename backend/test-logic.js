@@ -10,7 +10,7 @@ db.prepare('DELETE FROM users WHERE id = 9999').run();
 
 db.prepare(`
   INSERT INTO users (id, name, email, password_hash, role, subscription_plan, subscription_status, subscription_price)
-  VALUES (9999, 'Test Golfer', 'testgolfer@test.com', 'hash', 'subscriber', 'monthly', 'active', 19.0)
+  VALUES (9999, 'Test Golfer', 'testgolfer@test.com', 'hash', 'subscriber', 'monthly', 'active', 499.0)
 `).run();
 
 // Test 1: Add 5 rolling scores
@@ -56,10 +56,10 @@ try {
 console.log('\n5️⃣ Testing Draw Engine...');
 const pool = drawService.calculatePrizePool();
 console.log(`   Active Subscribers: ${pool.activeSubscribersCount}`);
-console.log(`   Total Pool: $${pool.totalPool}`);
-console.log(`   Tier 5 (40% + Rollover): $${pool.tier5Pool}`);
-console.log(`   Tier 4 (35%): $${pool.tier4Pool}`);
-console.log(`   Tier 3 (25%): $${pool.tier3Pool}`);
+console.log(`   Total Pool: ₹${pool.totalPool.toLocaleString('en-IN')}`);
+console.log(`   Tier 5 (40% + Rollover): ₹${pool.tier5Pool.toLocaleString('en-IN')}`);
+console.log(`   Tier 4 (35%): ₹${pool.tier4Pool.toLocaleString('en-IN')}`);
+console.log(`   Tier 3 (25%): ₹${pool.tier3Pool.toLocaleString('en-IN')}`);
 
 const simRandom = drawService.simulateDraw('random');
 console.log(`   Simulated Random Draw: ${JSON.stringify(simRandom.winningNumbers)}`);

@@ -30,8 +30,8 @@ const charities = [
     logo_url: 'https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?w=200&auto=format&fit=crop&q=80',
     cover_image: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200&auto=format&fit=crop&q=80',
     website_url: 'https://firsttee.org',
-    target_amount: 50000,
-    raised_amount: 32450,
+    target_amount: 500000,
+    raised_amount: 324500,
     is_featured: 1
   },
   {
@@ -43,8 +43,8 @@ const charities = [
     logo_url: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=200&auto=format&fit=crop&q=80',
     cover_image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1200&auto=format&fit=crop&q=80',
     website_url: 'https://braintumor.org',
-    target_amount: 75000,
-    raised_amount: 48900,
+    target_amount: 750000,
+    raised_amount: 489000,
     is_featured: 1
   },
   {
@@ -56,8 +56,8 @@ const charities = [
     logo_url: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=200&auto=format&fit=crop&q=80',
     cover_image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&auto=format&fit=crop&q=80',
     website_url: 'https://greensforgood.org',
-    target_amount: 40000,
-    raised_amount: 21800,
+    target_amount: 400000,
+    raised_amount: 218000,
     is_featured: 1
   },
   {
@@ -69,8 +69,8 @@ const charities = [
     logo_url: 'https://images.unsplash.com/photo-1569437061241-a848be43cc82?w=200&auto=format&fit=crop&q=80',
     cover_image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1200&auto=format&fit=crop&q=80',
     website_url: 'https://veteransfairway.org',
-    target_amount: 60000,
-    raised_amount: 37600,
+    target_amount: 600000,
+    raised_amount: 376000,
     is_featured: 0
   },
   {
@@ -82,8 +82,8 @@ const charities = [
     logo_url: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=200&auto=format&fit=crop&q=80',
     cover_image: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=1200&auto=format&fit=crop&q=80',
     website_url: 'https://hopeonthegreen.org',
-    target_amount: 35000,
-    raised_amount: 19400,
+    target_amount: 350000,
+    raised_amount: 194000,
     is_featured: 0
   },
   {
@@ -95,8 +95,8 @@ const charities = [
     logo_url: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=200&auto=format&fit=crop&q=80',
     cover_image: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=1200&auto=format&fit=crop&q=80',
     website_url: 'https://foresightgolf.org',
-    target_amount: 30000,
-    raised_amount: 14250,
+    target_amount: 300000,
+    raised_amount: 142500,
     is_featured: 0
   }
 ];
@@ -174,7 +174,7 @@ const adminInfo = insertUser.run(
   'admin',
   'yearly',
   'active',
-  190.0,
+  4990.0,
   '2027-03-20',
   charityIds['first-tee-junior-impact'],
   20.0
@@ -188,7 +188,7 @@ const callumInfo = insertUser.run(
   'subscriber',
   'monthly',
   'active',
-  19.0,
+  499.0,
   '2026-10-21',
   charityIds['birdies-for-brain-tumors'],
   15.0 // 15% contribution
@@ -238,7 +238,7 @@ sampleUsers.forEach((u, idx) => {
     'subscriber',
     u.plan,
     u.status,
-    u.plan === 'yearly' ? 190.0 : 19.0,
+    u.plan === 'yearly' ? 4990.0 : 499.0,
     '2026-10-25',
     charityIds[u.charity],
     u.pct
@@ -259,10 +259,10 @@ const insertDonation = db.prepare(`
   VALUES (?, ?, ?, ?, ?, ?)
 `);
 
-insertDonation.run(callumId, charityIds['birdies-for-brain-tumors'], 50.0, 'direct_donation', 'Callum Vance', 'In memory of Uncle Dave.');
-insertDonation.run(callumId, charityIds['birdies-for-brain-tumors'], 2.85, 'subscription_split', 'Callum Vance', 'Monthly sub split (15%)');
-insertDonation.run(null, charityIds['first-tee-junior-impact'], 250.0, 'direct_donation', 'Anonymous Supporter', 'Great work supporting young golfers!');
-insertDonation.run(null, charityIds['greens-for-good-environmental-trust'], 100.0, 'direct_donation', 'Highland Park GC', 'Wetland conservation sponsorship.');
+insertDonation.run(callumId, charityIds['birdies-for-brain-tumors'], 500.0, 'direct_donation', 'Callum Vance', 'In memory of Uncle Dave.');
+insertDonation.run(callumId, charityIds['birdies-for-brain-tumors'], 74.85, 'subscription_split', 'Callum Vance', 'Monthly sub split (15%)');
+insertDonation.run(null, charityIds['first-tee-junior-impact'], 2500.0, 'direct_donation', 'Anonymous Supporter', 'Great work supporting young golfers!');
+insertDonation.run(null, charityIds['greens-for-good-environmental-trust'], 1000.0, 'direct_donation', 'Highland Park GC', 'Wetland conservation sponsorship.');
 
 // 5. Seed Past Official Draw & Winners (PRD § 06, § 07, § 09)
 const insertDraw = db.prepare(`
@@ -274,7 +274,7 @@ const insertDraw = db.prepare(`
   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
-// February Draw: numbers [28, 33, 36, 41, 14]
+// February Draw: numbers [14, 28, 33, 36, 41]
 // Callum's scores are [36, 41, 28, 39, 33] -> Callum matches 4 numbers: [28, 33, 36, 41]!
 const draw1Info = insertDraw.run(
   'DH-DRAW-2026-02',
@@ -283,15 +283,15 @@ const draw1Info = insertDraw.run(
   JSON.stringify([14, 28, 33, 36, 41]),
   'published',
   15,
-  6800.0, // total pool
-  10000.0, // rollover in
-  12720.0, // rollover out (5-match jackpot was unclaimed, so 40% of pool rolled over into next jackpot!)
-  2720.0, // tier 5 pool (40%)
-  2380.0, // tier 4 pool (35%)
-  1700.0, // tier 3 pool (25%)
-  0,      // tier 5 winners (rolled over!)
-  1,      // tier 4 winner (Callum Vance!)
-  2       // tier 3 winners
+  680000.0, // total pool
+  1000000.0, // rollover in
+  1272000.0, // rollover out
+  272000.0, // tier 5 pool (40%)
+  238000.0, // tier 4 pool (35%)
+  170000.0, // tier 3 pool (25%)
+  0,        // tier 5 winners (rolled over!)
+  1,        // tier 4 winner (Callum Vance!)
+  2         // tier 3 winners
 );
 const draw1Id = draw1Info.lastInsertRowid;
 
@@ -307,7 +307,7 @@ insertWinner.run(
   callumId,
   '4-match',
   JSON.stringify([28, 33, 36, 41]),
-  2380.00,
+  238000.00,
   'https://images.unsplash.com/photo-1592919505780-303950717480?w=600&auto=format&fit=crop&q=80',
   'approved',
   'paid',
@@ -321,7 +321,7 @@ if (createdSubscriberIds.length >= 2) {
     createdSubscriberIds[0],
     '3-match',
     JSON.stringify([28, 36, 41]),
-    850.00,
+    85000.00,
     'https://images.unsplash.com/photo-1592919505780-303950717480?w=600&auto=format&fit=crop&q=80',
     'approved',
     'paid',
@@ -334,7 +334,7 @@ if (createdSubscriberIds.length >= 2) {
     createdSubscriberIds[1],
     '3-match',
     JSON.stringify([33, 36, 41]),
-    850.00,
+    85000.00,
     'https://images.unsplash.com/photo-1592919505780-303950717480?w=600&auto=format&fit=crop&q=80',
     'pending',
     'pending',
@@ -342,10 +342,10 @@ if (createdSubscriberIds.length >= 2) {
   );
 }
 
-// Update current system jackpot rollover setting
-db.prepare('UPDATE system_settings SET value = ? WHERE key = ?').run('14250.00', 'jackpot_rollover');
+// Update current system jackpot rollover setting (₹14,25,000)
+db.prepare('UPDATE system_settings SET value = ? WHERE key = ?').run('1425000.00', 'jackpot_rollover');
 
-console.log('✅ Database seeded successfully!');
+console.log('✅ Database seeded successfully with Indian Rupees (INR ₹)!');
 console.log('----------------------------------------------------');
 console.log('🔑 Credentials:');
 console.log('   Admin:  admin@digitalheroes.com  /  admin123');

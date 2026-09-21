@@ -41,6 +41,13 @@ export const AuthProvider = ({ children }) => {
     return data.user;
   };
 
+  const socialLogin = async (socialData) => {
+    const data = await api.auth.socialLogin(socialData);
+    localStorage.setItem('dh_token', data.token);
+    setUser(data.user);
+    return data.user;
+  };
+
   const logout = () => {
     localStorage.removeItem('dh_token');
     setUser(null);
@@ -73,6 +80,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     register,
+    socialLogin,
     logout,
     refreshUser,
     updateProfile,
